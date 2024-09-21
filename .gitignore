@@ -1,0 +1,5 @@
+NLP_PJ_1/ckpt/*
+NLP_PJ_1/wandb/*
+NLP_PJ_1/.vector_cache/*
+NLP_PJ_1/.data/*
+NLP_PJ_1/__pycache__/*
