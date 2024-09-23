@@ -21,6 +21,26 @@ class RNNEncoder(nn.Module):
         output, _ = self.rnn(x)
         return output
     
+class GRUEncoder(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, dropout):
+        super(GRUEncoder, self).__init__()
+        # Batch normalization will be applied to the input to stabilize the training
+        self.bn = nn.BatchNorm1d(input_size)
+        # Using a bidirectional GRU, the hidden size should be divided by 2 for each direction
+        self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size//2, num_layers=num_layers,
+                          dropout=dropout, batch_first=True, bidirectional=True)
+
+    def forward(self, x):
+        bsz = x.size(0)
+        seq_len = x.size(1)
+        # Apply batch normalization
+        x = x.view(bsz * seq_len, -1)  # Reshape for batch norm: (batch_size * seq_len, input_size)
+        x = self.bn(x)
+        x = x.view(bsz, seq_len, -1)  # Reshape back: (batch_size, seq_len, input_size)
+        # Pass through the GRU
+        output, _ = self.gru(x)
+        return output
+    
 # Transformer Encoder
 class Transformer(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, nhead, dropout):
@@ -48,7 +68,9 @@ class Transformer(nn.Module):
         output = self.transformer_encoder(x)
         output = self.ffc(output)
         return output
-    
+
+
+
 if __name__ == '__main__':
     # Test RNN Encoder
     rnn_encoder = RNNEncoder(input_size=300, hidden_size=256, num_layers=2, dropout=0.1)
@@ -61,4 +83,3 @@ if __name__ == '__main__':
     x = torch.randn(32, 20, 300)
     output = transformer(x)
     print(output.shape)
-

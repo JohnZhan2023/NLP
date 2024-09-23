@@ -14,11 +14,11 @@ class Backbone(nn.Module):
         # the input size of the classifier is (bsz, 200, embedding_size)
         self.fc = nn.Sequential(
             nn.Linear(input_size, input_size//2),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Dropout(dropout),
             nn.Linear(input_size//2, input_size//4),
-            nn.ReLU(),
-            nn.Linear(input_size//4, num_class)
+            nn.LeakyReLU(),
+            nn.Linear(input_size//4, num_class),
         )
 
         # attention layer
